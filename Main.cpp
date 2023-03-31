@@ -3,10 +3,15 @@
 #include "HexGraph.h"
 #include "EnergyTransfer.h"
 #include <iostream>
+#include <fstream>
+#include <stdio.h>
+#include <conio.h>
+#include <Python.h>
 
 using namespace std;
 
 #define MILLIS_IN_SECOND 1000
+#pragma warning(disable : 4996)
 
 int timeDuration = 0;
 int resolutionNodes = 0;
@@ -34,6 +39,9 @@ void getUserInput()
 
 int main()
 {
+	ofstream myfile;
+	myfile.open("example.txt");
+
 	// NOTE : this is for surface and is effectively 2 dimensional
 	// get user input
 	cout << "Heat Transfer Simulation (2d)" << endl;
@@ -46,22 +54,44 @@ int main()
 	material->SetGraphConditions(startingTemp * materialSpecificHeat, materialHeatTransferCoef, materialSpecificHeat);
 
 	// generate frames and export frames to file
-	cout << "Baking frames\n..." << endl;
-	long fCount = 0;
+	cout << "Baking frames\n" << endl;
 
 	const long TICKS = (timeDuration * MILLIS_IN_SECOND) / TICKLENGTH;
+	long tenPercentMarker = TICKS / 10;
+	int percentCounter = 0;
 
 	for (long i = 0; i < TICKS; i++)
 	{
 		material->updateConditions();
 		// TODO -- append material state to file
+
+		// loading marker
+		if (i % tenPercentMarker == 0)
+		{
+			percentCounter += 10;
+			cout << percentCounter << "%" << endl;
+		}
+			
 	}
 
-	cout << "Done baking" << endl;
-	cout << "Frame count: " << fCount << endl;
+	cout << "\nDone baking" << endl;
+	cout << "Frame count: " << TICKS << endl;
+
+	myfile << "Writing this to a file.\n";
+	myfile.close();
+
+	cout << "Closing File" << endl;
 	cout << "Opening sim" << endl;
 
-	// run frames in python script
+	char filename[] = "Display.py";
+	FILE* fp;
+
+	Py_Initialize();
+
+	fp = fopen(filename, "r");
+	PyRun_SimpleFile(fp, filename);
+
+	Py_Finalize();
 
 	cout << "Sim playback complete" << endl;
 	delete material;
