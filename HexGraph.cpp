@@ -3,6 +3,7 @@
 #include "Hex.h"
 #include "EnergyTransfer.h"
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -42,9 +43,9 @@ void HexGraph::SetDimensions(int width, int height)
 
 void HexGraph::SetGraphConditions(double energy, double energyTransferCoef, double specificHeat)
 {
-	for (Hex* h : hexList)
+	for (int i = 0; i < this->hexList.size(); i++)
 	{
-		h->setConditions(energy, energyTransferCoef, specificHeat);
+		this->getHexAt(i)->setConditions(energy, energyTransferCoef, specificHeat);
 	}
 }
 

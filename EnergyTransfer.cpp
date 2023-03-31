@@ -10,9 +10,11 @@ double EnergyTransfer::transferConductionEnergy(Hex* parent, Hex* target)
 	double tHot = parent->getTemp();
 	double tCold = target->getTemp();
 	
-	double q = (k * A * (tHot - tCold) * TICKLENGTH) / D;
-	parent->addEnergy(q);
-	target->subtractEnergy(q);
+	double q = (k * (double)A * (tHot - tCold) * (TICKLENGTH));
+
+	parent->addEnergy(q * -1);
+	target->addEnergy(q);
+	
 
 	return q;
 }

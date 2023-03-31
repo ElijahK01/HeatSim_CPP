@@ -1,5 +1,8 @@
 #pragma once
 #include "Hex.h"
+#include <string>
+
+using namespace std;
 
 class HexGraph
 {

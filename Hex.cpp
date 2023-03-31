@@ -10,9 +10,9 @@ Hex* ptrIV  = nullptr;  // down
 Hex* ptrV   = nullptr;  // down left
 Hex* ptrVI  = nullptr;  // up left
 
-double energy;
-double density;
-double specificHeat;
+double energy = 1.0;
+double density = 1.0;
+double specificHeat = 0.0;
 double tempEnergyIn  = 0.0;
 double tempEnergyOut = 0.0;
 double energyTransferCoef;
@@ -84,17 +84,17 @@ double Hex::getTransferCoef()
 
 double Hex::getTemp()
 {
-	return this->energy / (this->specificHeat * this->density);
+	return (double)this->energy / ((double)this->specificHeat * (double)this->density);
 }
 
 void Hex::addEnergy(double q)
 {
-	this->tempEnergyIn = q;
+	this->tempEnergyIn += q;
 }
 
 void Hex::subtractEnergy(double q)
 {
-	this->tempEnergyOut = q;
+	this->tempEnergyOut += q;
 }
 
 void Hex::setConditions(double energy, double energyTransferCoef, double specificHeat)
@@ -106,5 +106,7 @@ void Hex::setConditions(double energy, double energyTransferCoef, double specifi
 
 void Hex::applyChanges()
 {
-	this->energy = this->tempEnergyIn - this->tempEnergyOut;
+	this->energy += this->tempEnergyIn;
+	this->tempEnergyIn = 0;
+	this->tempEnergyOut = 0;
 }

@@ -1,14 +1,18 @@
 
 # import the pygame module
 import pygame
+
+f = open("SimulationOutput.txt", "r")
   
 # Define the background colour
 # using RGB color coding.
 background_colour = (11, 11, 100);
-  
+white=(255,255,255)
+
+pygame.init()
 # Define the dimensions of
 # screen object(width,height)
-screen = pygame.display.set_mode((800, 800))
+screen = pygame.display.set_mode((1000, 1000))
   
 # Set the caption of the screen
 pygame.display.set_caption('Heat Sim Playback')
@@ -18,16 +22,44 @@ screen.fill(background_colour)
   
 # Update the display using flip
 pygame.display.flip()
-  
+
 # Variable to keep our game loop running
 running = True
-  
+
+dimension_x = 10;
+dimension_y = 10;
+
+rectW = 10;
+rectH = 10;
+halfOffset = rectH/2;
+
+SPEED = 100
+
+line = f.readline()
+dimension_x = line.split(' ')[1]
+dimension_y = dimension_x
+
+counter = 0;
 # game loop
 while running:
     
 # for loop through the event queue  
-    for event in pygame.event.get():
-      
-        # Check for QUIT event      
-        if event.type == pygame.QUIT:
-            running = False
+    for i in range(SPEED):
+        line = f.readline()
+
+    if(line.__contains__(',')):
+        for i in range(int(dimension_x) - 1):
+            for j in range(int(dimension_y) - 1):
+                red = int(float(line.split(',')[i*int(dimension_x) + j]))/3
+                if (red > 255):
+                    red = 255
+                color = (red,0,100)
+                # Drawing Rectangle
+                pygame.draw.rect(screen, color, pygame.Rect(i*rectW, j*rectH + (halfOffset * (i % 2)), rectW, rectH))
+
+        
+        pygame.display.flip()
+    else:
+        running = False
+    counter += SPEED;
+    print("Time: " + str(counter) + "ms")
