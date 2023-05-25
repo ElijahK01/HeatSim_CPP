@@ -11,11 +11,11 @@
 using namespace std;
 
 #define MILLIS_IN_SECOND 1000
-//#define TESTING
+#define TESTING
 #pragma warning(disable : 4996)
 
-int timeDuration = 10;
-int resolutionNodes = 40;
+int timeDuration = 30;
+uint16_t resolutionNodes = 60;
 double startingTemp = 100;
 double materialSpecificHeat = 10;
 double materialHeatTransferCoef = 0.7;
@@ -40,8 +40,12 @@ void getUserInput()
 
 int main()
 {
-	ofstream simOutput;
-	simOutput.open("SimulationOutput.txt");
+	ofstream simOutput("SimulationOutput.dat", ios::out | ios::binary);
+	if (!simOutput)
+	{
+		cout << "Cannot Open File" << endl;
+		return 1;
+	}
 
 	// NOTE : this is for surface and is effectively 2 dimensional
 	// get user input
@@ -52,7 +56,8 @@ int main()
 #endif // !1
 
 	
-	simOutput << "DIM " << resolutionNodes << "\n";
+	simOutput.write((char*)&resolutionNodes, 2);
+
 	// setup graph
 	HexGraph* material = new HexGraph(resolutionNodes, resolutionNodes);
 
@@ -76,10 +81,9 @@ int main()
 		
 		for (int j = 0; j < material->getSize(); j++)
 		{
-			simOutput << material->getHexAt(j)->getTemp() << ",";
+			uint16_t regularizedDate = uint16_t(int(material->getHexAt(j)->getTemp()));
+			simOutput.write((char*)&regularizedDate, 2);
 		}
-
-		simOutput << "N\n";
 
 		// loading marker
 		if (i % tenPercentMarker == 0)
@@ -93,7 +97,6 @@ int main()
 	cout << "\nDone baking" << endl;
 	cout << "Frame count: " << TICKS << endl;
 
-	simOutput << "\nEOF";
 	simOutput.close();
 
 	cout << "Closing File" << endl;

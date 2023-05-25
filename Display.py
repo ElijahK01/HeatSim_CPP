@@ -2,7 +2,7 @@
 # import the pygame module
 import pygame
 
-f = open("SimulationOutput.txt", "r")
+f = open("SimulationOutput.dat", "rb")
   
 # Define the background colour
 # using RGB color coding.
@@ -35,8 +35,8 @@ halfOffset = rectH/2;
 
 SPEED = 100
 
-line = f.readline()
-dimension_x = line.split(' ')[1]
+line = f.read(2)
+dimension_x = int.from_bytes(line, 'little')
 dimension_y = dimension_x
 
 counter = 0;
@@ -44,13 +44,14 @@ counter = 0;
 while running:
     
 # for loop through the event queue  
-    for i in range(SPEED):
-        line = f.readline()
+    for i in range(SPEED - 1):
+        line = f.read(dimension_x * dimension_y * 2)
 
-    if(line.__contains__(',')):
-        for i in range(int(dimension_x) - 1):
-            for j in range(int(dimension_y) - 1):
-                red = int(float(line.split(',')[i*int(dimension_x) + j]))/3
+    if(line):
+        for i in range(int(dimension_x)):
+            for j in range(int(dimension_y)):
+                num = int.from_bytes(f.read(2), 'little')
+                red = num/3
                 if (red > 255):
                     red = 255
                 color = (red,0,100)
